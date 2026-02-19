@@ -1,69 +1,65 @@
-﻿# BIG DATA CLEANING GOD LAB
+﻿# BIG DATA QUALITY ENGINE
 
 <p align="center">
   <img src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python">
   <img src="https://img.shields.io/badge/SQLite-003B57?style=for-the-badge&logo=sqlite&logoColor=white" alt="SQLite">
   <img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white" alt="Docker">
-  <img src="https://img.shields.io/badge/Docker%20Compose-1D63ED?style=for-the-badge&logo=docker&logoColor=white" alt="Docker Compose">
-  <img src="https://img.shields.io/badge/Big%20Data%20Cleaning-111111?style=for-the-badge" alt="Big Data Cleaning">
+  <img src="https://img.shields.io/badge/Data%20Quality-Pipeline-black?style=for-the-badge" alt="Data Quality">
+  <img src="https://img.shields.io/badge/ETL-Batch%20Processing-0A7E8C?style=for-the-badge" alt="ETL Batch">
 </p>
 
 ---
 
 ## Descripcion
 
-**BIG DATA CLEANING GOD LAB** es un laboratorio de ingenieria de datos para generar y limpiar grandes volumenes de informacion transaccional con errores reales: duplicados, datos faltantes, emails mal formateados y valores atipicos.
+**BIG DATA QUALITY ENGINE** es un proyecto de ingeniería de datos enfocado en limpieza masiva y curación de eventos transaccionales. El sistema genera datasets grandes con ruido realista, ejecuta reglas de calidad en lotes, deduplica registros por clave de negocio y produce artefactos listos para analítica.
 
-El proyecto esta diseñado para ser:
+Este laboratorio está orientado a portafolio profesional en Big Data porque demuestra:
 
-- **Professional**: Flujo ETL reproducible con validaciones de calidad
-- **Modular**: Generacion, limpieza y reporte separados por componentes
-- **Escalable**: Procesamiento por lotes para millones de filas
-- **Listo para produccion**: Docker, pruebas y salida analitica verificable
+- Diseño ETL reproducible de punta a punta.
+- Control de calidad de datos con reglas explícitas.
+- Procesamiento de alto volumen en particiones CSV.
+- Persistencia curada para explotación analítica.
 
 ---
 
-## Arquitectura del Sistema
+## Arquitectura
 
 ```text
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                     BIG DATA CLEANING GOD LAB                              │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                             │
-│   ┌─────────────┐     ┌─────────────┐     ┌─────────────┐                  │
-│   │ Data        │────▶│ Python ETL  │────▶│  Curated    │                  │
-│   │ Generator   │     │  Cleaner    │     │ SQLite/CSV  │                  │
-│   │ (Raw CSV)   │     │ (Rules+DQ)  │     │   Layer     │                  │
-│   └─────────────┘     └──────┬──────┘     └──────┬──────┘                  │
-│                              │                    │                         │
-│                              ▼                    ▼                         │
-│                     ┌────────────────┐    ┌────────────────┐                │
-│                     │ Quality Report │    │ Segment Metrics│                │
-│                     │    JSON        │    │  Country/Chan  │                │
-│                     └────────────────┘    └────────────────┘                │
-│                                                                             │
-└─────────────────────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────────────────┐
+│                        BIG DATA QUALITY ENGINE                              │
+├──────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│  Generator CLI           Cleaner Pipeline             Curated Layer          │
+│  (main.py generate)      (main.py clean)             (SQLite + CSV + JSON)  │
+│                                                                              │
+│  raw_events_*.csv  ───▶  Normalization Rules  ───▶   data/curated/curated.db│
+│                          Type Validation              data/curated/*.csv     │
+│                          Dedup by event_id            reports/quality_report  │
+│                          Outlier control                                          │
+│                                                                              │
+└──────────────────────────────────────────────────────────────────────────────┘
 ```
 
-### Flujo de Datos
+### Flujo funcional
 
-1. **Extract/Generate**: Se generan CSV crudos con datos sucios simulando produccion real.
-2. **Transform/Clean**: Se normaliza texto, fechas, cantidades y correos.
-3. **Deduplicate**: Se elimina duplicidad por `event_id` con clave unica en SQLite.
-4. **Load Curated**: Se persiste dataset curado en `curated.db` y `curated_events.csv`.
-5. **Analyze**: Se calculan top segmentos de revenue por pais/canal y calidad final.
+1. **Generate**: crea millones de registros con nulos, duplicados y formatos corruptos.
+2. **Clean**: corrige emails, normaliza campos, valida fechas/números y filtra inválidos.
+3. **Deduplicate**: aplica unicidad por `event_id` en SQLite (`PRIMARY KEY`).
+4. **Curate**: exporta dataset limpio a SQLite y CSV.
+5. **Report**: calcula KPIs de calidad y top segmentos por revenue.
 
 ---
 
 ## Stack Tecnologico
 
-| Componente | Version | Descripcion |
-|------------|---------|-------------|
-| Python | 3.11+ | Motor principal del pipeline |
-| SQLite | stdlib | Curado, deduplicacion y analitica SQL |
-| Docker | latest | Contenerizacion del flujo |
-| Docker Compose | latest | Orquestacion local |
-| unittest | stdlib | Test end-to-end del pipeline |
+| Componente | Version | Rol |
+|------------|---------|-----|
+| Python | 3.11+ | Implementación del pipeline y CLI |
+| SQLite | stdlib | Almacenamiento curado y agregaciones SQL |
+| Docker | latest | Ejecución portable en contenedor |
+| Docker Compose | latest | Orquestación local |
+| unittest | stdlib | Pruebas de humo end-to-end |
 
 ---
 
@@ -71,26 +67,21 @@ El proyecto esta diseñado para ser:
 
 ```text
 Proyectos/
-│
-├── docker-compose.yml                 # Orquestacion del servicio
-├── Dockerfile                         # Imagen de ejecucion del pipeline
-├── main.py                            # CLI principal (generate/clean/run-all)
-├── requirements.txt                   # Dependencias (stdlib only)
-│
+├── main.py
+├── Dockerfile
+├── docker-compose.yml
+├── requirements.txt
+├── README.md
 ├── src/
 │   └── bigdata_god/
-│       ├── generator.py               # Generador de datos sucios a gran escala
-│       └── pipeline.py                # Limpieza, deduplicacion y reporte
-│
+│       ├── generator.py
+│       └── pipeline.py
 ├── tests/
-│   └── test_pipeline_smoke.py         # Prueba de humo end-to-end
-│
+│   └── test_pipeline_smoke.py
 ├── data/
-│   ├── raw/                           # Archivos crudos generados
-│   └── curated/                       # curated.db y curated_events.csv
-│
+│   ├── raw/
+│   └── curated/
 └── reports/
-    └── quality_report.json            # Reporte final de calidad
 ```
 
 ---
@@ -99,22 +90,14 @@ Proyectos/
 
 - Docker Engine 20.10+
 - Docker Compose 2.0+
-- Python 3.11+ (si ejecutas sin Docker)
-- 4GB RAM disponibles
-- 5GB espacio en disco
+- Python 3.11+ (ejecución local)
+- 4 GB RAM mínimo
 
 ---
 
-## Instalacion y Configuracion
+## Instalacion y Ejecucion
 
-### 1. Clonar el repositorio
-
-```bash
-git clone https://github.com/ieharo1/Proyectos.git
-cd Proyectos
-```
-
-### 2. Ejecutar en local (sin Docker)
+### Opcion 1: Local
 
 ```bash
 python -m venv .venv
@@ -123,7 +106,7 @@ pip install -r requirements.txt
 python main.py run-all --rows 1000000 --partitions 20
 ```
 
-### 3. Ejecutar con Docker
+### Opcion 2: Docker
 
 ```bash
 docker compose up --build
@@ -131,66 +114,56 @@ docker compose up --build
 
 ---
 
-## Uso del Pipeline
-
-### Como funciona (paso a paso)
-
-1. `generate` crea particiones CSV con ruido de calidad de datos.
-2. `clean` aplica validaciones y normalizaciones de negocio.
-3. Se inserta en SQLite con `INSERT OR IGNORE` para deduplicar.
-4. Se exporta capa curada a CSV para consumo externo.
-5. Se genera `quality_report.json` con KPIs de limpieza.
-
-### Comandos principales
+## Uso del CLI
 
 ```bash
-# Flujo completo
-python main.py run-all --rows 1000000 --partitions 20
+# 1) Generar datos sucios masivos
+python main.py generate --output data/raw --rows 3000000 --partitions 36 --seed 42
 
-# Solo generacion de datos sucios
-python main.py generate --output data/raw --rows 3000000 --partitions 36
-
-# Solo limpieza y reporte
+# 2) Ejecutar limpieza y curacion
 python main.py clean --input-glob "data/raw/*.csv" --curated data/curated --report reports/quality_report.json
+
+# 3) Flujo completo en un comando
+python main.py run-all --raw-output data/raw --rows 3000000 --partitions 36 --curated data/curated --report reports/quality_report.json
 ```
 
 ---
 
-## Verificar que Todo Funciona
+## Regla de Calidad Aplicadas
+
+- Estandarizacion de `country`, `channel`, `product`.
+- Normalizacion de email (`" at "` -> `"@"`).
+- Validacion de timestamps ISO.
+- Control de rangos para `amount_usd` y `quantity`.
+- Descarte de filas inválidas.
+- Eliminacion de duplicados por `event_id`.
+
+---
+
+## Artefactos de Salida
+
+- `data/curated/curated.db` -> base curada con llave única por evento.
+- `data/curated/curated_events.csv` -> export tabular para consumo directo.
+- `reports/quality_report.json` -> métricas de calidad, volumen y segmentos top.
+
+---
+
+## Verificacion Tecnica
 
 ```bash
-# Test de humo end-to-end
+# prueba automatica
 python -m unittest discover -s tests -p "test_*.py" -v
 
-# Ver artefactos generados
-dir data\curated
+# inspeccionar reporte
 type reports\quality_report.json
 ```
 
-Se considera correcto cuando:
+Criterios de éxito:
 
-- `quality_report.json` existe y muestra `raw_rows > 0`
+- `raw_rows > 0`
 - `curated_rows > 0`
-- existe `data/curated/curated.db`
-- existe `data/curated/curated_events.csv`
-
----
-
-## Solucion de Problemas
-
-### Docker no levanta
-
-```bash
-docker compose logs
-docker compose down
-docker compose up --build
-```
-
-### No aparecen archivos curados
-
-1. Verifica que existan archivos en `data/raw`.
-2. Ejecuta `python main.py clean --input-glob "data/raw/*.csv"`.
-3. Revisa `reports/quality_report.json` para confirmar filas procesadas.
+- `rows_removed >= 0`
+- `top_segments` con resultados
 
 ---
 
