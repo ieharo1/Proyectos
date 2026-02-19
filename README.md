@@ -1,13 +1,5 @@
 ﻿# BIG DATA QUALITY ENGINE
 
-<p align="center">
-  <img src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python">
-  <img src="https://img.shields.io/badge/SQLite-003B57?style=for-the-badge&logo=sqlite&logoColor=white" alt="SQLite">
-  <img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white" alt="Docker">
-  <img src="https://img.shields.io/badge/Data%20Quality-Pipeline-black?style=for-the-badge" alt="Data Quality">
-  <img src="https://img.shields.io/badge/ETL-Batch%20Processing-0A7E8C?style=for-the-badge" alt="ETL Batch">
-</p>
-
 ---
 
 ## Descripcion
