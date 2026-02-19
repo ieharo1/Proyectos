@@ -1,0 +1,9 @@
+services:
+  bigdata-god-cleaning:
+    build: .
+    container_name: bigdata_god_cleaning
+    volumes:
+      - ./data:/app/data
+      - ./reports:/app/reports
+    command: ["python", "main.py", "run-all", "--rows", "1000000", "--partitions", "20"]
+
